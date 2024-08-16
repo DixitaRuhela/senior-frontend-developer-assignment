@@ -23,8 +23,6 @@ export const fetchMoviesFailure = (error) => ({
 
 export const fetchMovies = (page, searchTerm, isSearching) => {
 
-    console.log("isSearching : " + isSearching);
-
     return async (dispatch) => {
         dispatch(fetchMoviesRequest(true));
         try {
@@ -34,7 +32,7 @@ export const fetchMovies = (page, searchTerm, isSearching) => {
                     : 'https://api.themoviedb.org/3/movie/popular',
                 {
                     params: {
-                        api_key: 'a02447180455ae832aa0eb2e8e2773e3',
+                        api_key: `${process.env.REACT_APP_API_KEY}`,
                         page: page,
                         query: isSearching ? searchTerm : '',
                     },
