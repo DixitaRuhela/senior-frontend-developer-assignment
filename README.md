@@ -8,4 +8,12 @@
 
 # Few Screenshots
 
+![alt text](https://github.com/DixitaRuhela/ui_assets/blob/master/cinfavorites/dashboard.png)
+
 ![alt text](https://github.com/DixitaRuhela/ui_assets/blob/master/cinfavorites/showfavorite.png)
+
+![alt text](https://github.com/DixitaRuhela/ui_assets/blob/master/cinfavorites/loginpage.png)
+
+![alt text](https://github.com/DixitaRuhela/ui_assets/blob/master/cinfavorites/no_internet.png)
+
+![alt text](https://github.com/DixitaRuhela/ui_assets/blob/master/cinfavorites/norecordfound.png)
