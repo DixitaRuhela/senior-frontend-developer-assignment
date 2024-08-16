@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Grid, Typography, Box, Button, TextField } from '@mui/material';
+import { Grid, Typography, Box, FormControl, InputLabel, Select, MenuItem, Switch } from '@mui/material';
 import { makeStyles } from '@mui/styles';
 import SearchComponent from '../CommonComponents/Search'; // Import the SearchComponent
 
@@ -15,19 +15,8 @@ const useStyles = makeStyles({
         alignItems: 'center',
         justifyContent: 'flex-end',
     },
-    filterBox: {
-        paddingRight: '16px',
-        border: '1px solid #BDBDBD',
-        borderRadius: '4px',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'flex-end',
-        gap: '16px', // Add gap between filter input and button
-    },
-   
     inputLabel: {
         color: 'white',
-
     },
     button: {
         backgroundColor: '#1E88E5',
@@ -37,84 +26,120 @@ const useStyles = makeStyles({
     },
 });
 
+const MovieHeader = (props) => {
+    let {
+        handleFilterChange,
+        searchTerm,
+        setSearchTerm,
+        name,
+        handleFavouriteClick,
+        showFavourites,
+    } = props;
 
-const MovieHeader = ({
-    handleFilterChange,
-    searchTerm,
-    setSearchTerm,
-    name,
-    handleFavouriteClick,
-    showFavourites,
-}) => {
+    name = name ? name : "User";
+
     const classes = useStyles();
+
     const [voteCount, setVoteCount] = useState('');
 
     const handleVoteAverageChange = (event) => {
-        const value = event.target.value;
-        setVoteCount(value);
-        handleFilterChange(value); // Notify parent component of the filter change
+        const currentState = setVoteCount(event.target.value);
+        handleFilterChange(voteCount); // Notify parent component of the filter change
     };
 
     return (
-        <Box className={classes.container}>
-            <Grid container spacing={2} alignItems="center">
-                <Grid item xs={12} md={6}>
-                    <Typography variant="h3" gutterBottom className={classes.title}>
-                        Movies
-                    </Typography>
-                </Grid>
-                <Grid item xs={12} md={6}>
-                    <Grid container spacing={2} alignItems="center" justifyContent="flex-end">
-                        <Grid item>
-                            <Typography variant="h6">
-                                Welcome, <strong>{name}</strong>
-                            </Typography>
-                        </Grid>
-                        <Grid item>
-                            <SearchComponent searchTerm={searchTerm} setSearchTerm={setSearchTerm} />
-                        </Grid>
+        <Grid container alignItems={"center"} justifyContent="space-between">
+            <Grid item xs={12} md={2}>
+                <Typography variant="h3" gutterBottom className={classes.title} >
+                    Movies
+                </Typography>
+            </Grid>
+            <Grid item xs={12} md={4}>
+                {/* Increased width of the Search Input */}
+                <SearchComponent
+                    searchTerm={searchTerm}
+                    setSearchTerm={setSearchTerm}
+                    sx={{ width: '100%' }} // Make the search input take full width of its grid item
+                />
+            </Grid>
+            <Grid item xs>
+                <Grid container alignItems={"center"} justifyContent="flex-end" spacing={1}>
+
+                    <Grid item xs={6} md={3}>
+                        {/* Adding Show Favorites Checkbox */}
+
+                        <Switch checked={showFavourites} sx={{
+                            '& .MuiSwitch-track': {
+                                backgroundColor: 'white', // Track color when unchecked
+                            },
+
+                        }}
+                            onChange={handleFavouriteClick} color={"secondary"} />
+                        {showFavourites ? "Show All" : "Show Favorites"}
+                    </Grid>
+                    <Grid item xs={6} md={3}>
+                        {/* Adding filter dropdown for filter by rating */}
+                        <FilterByRating
+                            value={voteCount}
+                            onChange={handleVoteAverageChange} />
+                    </Grid>
+                    <Grid item xs md={1} />
+                    <Grid item xs={12} md={3}>
+                        <Typography variant="h6">
+                            Welcome, <strong style={{ color: "#f00" }}>{name}</strong>
+                        </Typography>
                     </Grid>
                 </Grid>
-                <Grid item xs={12}>
-                    <Box className={classes.filterBox}>
-                        <TextField
-                            label="Filter by Vote Average"
-                            variant="outlined"
-                            type="number"
-                            inputProps={{ min: 0, max: 10, step: 0.1 }}
-                            value={voteCount}
-                            onChange={handleVoteAverageChange}
-                            margin="normal"
-                            InputLabelProps={{
-                                style: { color: '#fff' },
-                            }}
-                            InputProps={{
-                                style: { color: '#fff' },
-                                sx: {
-                                    '& .MuiOutlinedInput-notchedOutline': {
-                                        borderColor: '#fff',
-                                    },
-                                    '&:hover .MuiOutlinedInput-notchedOutline': {
-                                        borderColor: '#fff',
-                                    },
-                                    '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
-                                        borderColor: '#fff',
-                                    },
-                                },
-                            }}
-                        />
-                        <Button
-                            variant="contained"
-                            className={classes.button}
-                            onClick={handleFavouriteClick}
-                        >
-                            {showFavourites ? 'Show All Movies' : 'Show Favourites'}
-                        </Button>
-                    </Box>
-                </Grid>
             </Grid>
-        </Box>
+        </Grid>
     );
 };
+
+function FilterByRating(props) {
+    const ratings = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+
+    return (
+        <FormControl sx={{ m: 1, minWidth: 180, borderColor: "#fff", color: "#fff" }} size="small">
+            <InputLabel id="demo-select-small-label" sx={{
+                color: '#fff', // Label color when not focused
+                '&.Mui-focused': {
+                    color: '#fff', // Label color when focused
+                },
+            }}>Filter By Rating</InputLabel>
+            <Select
+                labelId="demo-select-small-label"
+                id="demo-select-small"
+                value={props.value}
+                label="Filter By Rating"
+                onChange={props.onChange}
+                inputLabelProps={{
+                    style: { color: '#fff' },
+                }}
+                style={{ color: "#fff" }}
+                sx={{
+                    '& .MuiInputLabel-root': {
+                        color: 'white', // Label color
+                    },
+                    '& .MuiOutlinedInput-notchedOutline': {
+                        borderColor: '#fff',
+                    },
+                    '&:hover .MuiOutlinedInput-notchedOutline': {
+                        borderColor: '#fff',
+                    },
+                    '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+                        borderColor: '#fff',
+                    },
+                }}
+            >
+                <MenuItem value={-1}>
+                    <em>None</em>
+                </MenuItem>
+                {ratings.map((rating) => (
+                    <MenuItem key={rating} value={rating}>{rating}</MenuItem>
+                ))}
+            </Select>
+        </FormControl>
+    );
+}
 
 export default MovieHeader;

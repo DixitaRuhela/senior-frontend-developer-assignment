@@ -2,10 +2,11 @@ import React from 'react';
 import { Tooltip, Typography } from '@mui/material';
 
 const TooltipTitle = ({ title }) => {
+
   return (
     <Tooltip title={title} arrow aria-posinset={"top"}>
       <Typography 
-        variant="h5" 
+        variant="h6" 
         component="div" 
         color={"white"}
         

@@ -1,12 +1,12 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { TextField } from '@mui/material';
 import { makeStyles } from '@mui/styles';
 
 const useStyles = makeStyles({
   textField: {
-    width: '250px',
+    width: '100%',
     marginLeft: '2px',
-    marginBottom: '16px', 
+    marginBottom: '16px',
     backgroundColor: '#222',
     borderRadius: '4px',
     '& .MuiInputBase-input': {
@@ -25,18 +25,34 @@ const useStyles = makeStyles({
 });
 
 const SearchComponent = ({ searchTerm, setSearchTerm }) => {
+
   const classes = useStyles();
 
-  const handleChange = (event) => {
-    setSearchTerm(event.target.value);
-  };
+  const [query, setQuery] = useState(searchTerm);
+  const [debouncedQuery, setDebouncedQuery] = useState(query);
+
+  useEffect(() => {
+    // Set a timeout to update the debounced query
+    const handler = setTimeout(() => {
+      setDebouncedQuery(query);
+    }, 500); // 500ms debounce time
+
+    // Clear the timeout if the input value changes before the timeout duration
+    return () => {
+      clearTimeout(handler);
+    };
+  }, [query]);
+
+  useEffect(() => {
+    setSearchTerm(query);
+  }, [debouncedQuery]);
 
   return (
     <TextField
       variant="outlined"
       placeholder="Search for movies..."
-      value={searchTerm}
-      onChange={handleChange}
+      value={query}
+      onChange={(e) => setQuery(e.target.value)}
       className={classes.textField}
     />
   );

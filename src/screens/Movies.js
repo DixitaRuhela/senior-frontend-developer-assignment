@@ -7,6 +7,7 @@ import MovieCard from '../Components/MovieCard';
 import { fetchMovies } from '../redux/actions/movieActions';
 import { addFavourite, removeFavourite, toggleShowFavourites } from '../redux/actions/favoriteActions';
 import CircularProgress from '@mui/material/CircularProgress';
+import NoContent from '../CommonComponents/NoContent';
 
 export default function MoviesPage(props) {
     const dispatch = useDispatch();
@@ -46,7 +47,7 @@ export default function MoviesPage(props) {
 
     const handleAddToFavourites = (movie) => {
         const isFavourite = favourites.some(favMovie => favMovie.id === movie.id);
-        
+
         if (isFavourite) {
             dispatch(removeFavourite(movie.id));
         } else {
@@ -65,7 +66,7 @@ export default function MoviesPage(props) {
     const filterMovies = (moviesToFilter, voteCount) => {
         if (voteCount !== '') {
             const filteredMovies = moviesToFilter.filter((movie) =>
-                movie.vote_count >= voteCount
+                movie.vote_average >= voteCount
             );
             setDisplayedMovies(filteredMovies);
         } else {
@@ -91,12 +92,15 @@ export default function MoviesPage(props) {
 
     if (error) {
         console.error(error);
+
+        // Handling the case if user is not connected to internet
         navigate('/noNetwork');
         return null;
     }
 
     return (
-        <Box sx={{ backgroundColor: '#111', color: '#fff', minHeight: '100vh', padding: 2 }}>
+        <Box sx={{ backgroundColor: '#111', color: '#fff', minHeight: '95.5vh', padding: 2,overflow:"hidden" }}>
+            <Grid>
             <MovieHeader
                 searchTerm={searchTerm}
                 setSearchTerm={setSearchTerm}
@@ -106,46 +110,65 @@ export default function MoviesPage(props) {
                 voteCount={voteCount}
                 handleFilterChange={handleFilterChange} // Pass the filter change handler
             />
-            <Grid container spacing={2} xs={12}>
-                {displayedMovies.map((movie, index) => (
-                    <Grid item xs={6} sm={4} md={3} key={index}>
-                        <MovieCard 
-                            movie={movie} 
-                            isFavourites={favourites} 
-                            handleAddToFavourites={handleAddToFavourites} 
+            </Grid>
+          
+            <Grid container  xs={12} style={{overflow : "auto", maxHeight : "72.5vh"}}>
+        
+            {
+                displayedMovies && displayedMovies.length > 0 ? displayedMovies.map((movie, index) => (
+                    <Grid item xs={6} sm={6} md={2} key={index}>
+                        <MovieCard
+                            movie={movie}
+                            isFavourites={favourites}
+                            handleAddToFavourites={handleAddToFavourites}
                         />
                     </Grid>
-                ))}
+                )) :
+                // In case there is no movie, loading no record page
+                <NoContent/>
+            }
+                
             </Grid>
 
+            {/* Pagination bar component */}
             {!showFavourites && (
-                <Box
-                    sx={{
-                        display: 'flex',
-                        justifyContent: 'center',
-                        marginTop: 4,
-                        backgroundColor: '#333',
-                        padding: 2,
-                        borderRadius: 1,
-                    }}
-                >
-                    <Pagination
-                        count={500} // Assuming totalPages is 500 as per your code
-                        page={page}
-                        onChange={handlePageChange}
-                        color="primary"
-                        sx={{
-                            '& .Mui-selected': {
-                                backgroundColor: '#1E88E5',
-                                color: '#fff',
-                            },
-                            '& .MuiPaginationItem-root': {
-                                color: '#fff',
-                            },
-                        }}
-                    />
-                </Box>
+                <PaginationComponent
+                    currentPage={page}
+                    onChange={handlePageChange}
+                />
             )}
         </Box>
     );
+}
+
+function PaginationComponent(props) {
+
+    const {currentPage, onChange} = props;
+
+    return <Box
+        sx={{
+            display: 'flex',
+            justifyContent: 'center',
+            marginTop: 4,
+            backgroundColor: '#333',
+            padding: 2,
+            borderRadius: 1,
+        }}
+    >
+        <Pagination
+            count={500} // Assuming totalPages is 500 as per your code
+            page={currentPage}
+            onChange={onChange}
+            color="primary"
+            sx={{
+                '& .Mui-selected': {
+                    backgroundColor: '#1E88E5',
+                    color: '#fff',
+                },
+                '& .MuiPaginationItem-root': {
+                    color: '#fff',
+                },
+            }}
+        />
+    </Box>;
 }

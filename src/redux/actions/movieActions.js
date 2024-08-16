@@ -22,6 +22,9 @@ export const fetchMoviesFailure = (error) => ({
 });
 
 export const fetchMovies = (page, searchTerm, isSearching) => {
+
+    console.log("isSearching : " + isSearching);
+
     return async (dispatch) => {
         dispatch(fetchMoviesRequest(true));
         try {
